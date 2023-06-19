@@ -2,6 +2,7 @@ package next.controller;
 
 import core.db.DataBase;
 import core.mvc.Controller;
+import next.dao.UserDao;
 import next.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,9 @@ public class CreateUserController implements Controller {
                 req.getParameter("email"));
         log.debug("User : {}", user);
 
-        DataBase.addUser(user);
+        UserDao userDao = new UserDao();
+        userDao.insert(user);
+
         return "redirect:/";
     }
 
