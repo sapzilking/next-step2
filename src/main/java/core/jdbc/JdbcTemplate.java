@@ -13,10 +13,13 @@ import java.util.List;
 
 public class JdbcTemplate {
 
-    public void update(String sql, PreparedStatementSetter pss) throws DataAccessException {
+    public void update(String sql, Object... parameters) throws DataAccessException {
         try(Connection conn = ConnectionManager.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pss.setValues(pstmt);
+            for (int i = 0; i < parameters.length; i++) {
+                pstmt.setObject(i + 1, parameters[i]);
+
+            }
             pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new DataAccessException(e);
