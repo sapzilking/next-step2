@@ -24,22 +24,24 @@ public class JdbcTemplate {
     }
 
     @SuppressWarnings("rawtypes")
-    public List query(String sql, PreparedStatementSetter pss, RowMapper rowMapper) throws SQLException {
-        try(Connection conn = ConnectionManager.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            ResultSet rs = pstmt.executeQuery()) {
+    public <T> List<T> query(String sql, PreparedStatementSetter pss, RowMapper<T> rowMapper) throws DataAccessException {
+        try (Connection conn = ConnectionManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
             pss.setValues(pstmt);
-            List<Object> result = new ArrayList<>();
+            List<T> result = new ArrayList<>();
             if (rs.next()) {
                 result.add(rowMapper.mapRow(rs));
             }
             return result;
+        } catch (SQLException e) {
+            throw new DataAccessException(e);
         }
     }
 
     @SuppressWarnings("rawtypes")
-    public Object queryForObject(String sql, PreparedStatementSetter pss, RowMapper rowMapper) throws SQLException {
-        List result = query(sql, pss, rowMapper);
+    public <T> T queryForObject(String sql, PreparedStatementSetter pss, RowMapper<T> rowMapper) throws DataAccessException {
+        List<T> result = query(sql, pss, rowMapper);
         if (result.isEmpty()) {
             return null;
         }

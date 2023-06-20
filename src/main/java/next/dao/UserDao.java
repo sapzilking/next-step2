@@ -36,45 +36,33 @@ public class UserDao {
         jdbcTemplate.update(sql, pss);
     }
 
-    public User findByUserId(String userId) throws SQLException {
+    public User findByUserId(String userId) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate();
+        PreparedStatementSetter pss = pstmt -> pstmt.setString(1, userId);
 
-        PreparedStatementSetter pss = new PreparedStatementSetter() {
-            @Override
-            public void setValues(PreparedStatement pstmt) throws SQLException {
-                pstmt.setString(1, userId);
-            }
-        };
-
-        RowMapper rowMapper = new RowMapper() {
-            @Override
-            public Object mapRow(ResultSet rs) throws SQLException {
-                return new User(
-                        rs.getString("userId"),
-                        rs.getString("password"),
-                        rs.getString("name"),
-                        rs.getString("email"));
-            }
-        };
+        RowMapper<User> rowMapper = rs -> new User(
+                rs.getString("userId"),
+                rs.getString("password"),
+                rs.getString("name"),
+                rs.getString("email"));
 
         String sql = "SELECT userId, password, name, email FROM USERS WHERE userid=?";
-        return (User) jdbcTemplate.query(sql, pss, rowMapper);
+        return jdbcTemplate.queryForObject(sql, pss, rowMapper);
     }
 
     public List<User> findAll() throws SQLException {
         JdbcTemplate jdbcTemplate = new JdbcTemplate();
         PreparedStatementSetter pss = pstmt -> {
-
         };
 
-        RowMapper rowMapper = rs -> new User(
+        RowMapper<User> rowMapper = rs -> new User(
                 rs.getString("userId"),
                 rs.getString("password"),
                 rs.getString("name"),
                 rs.getString("email"));
 
         String sql = "SELECT userId, password, name, email FROM USERS";
-        return (List<User>) jdbcTemplate.query(sql, pss, rowMapper);
+        return jdbcTemplate.query(sql, pss, rowMapper);
     }
 
 }
