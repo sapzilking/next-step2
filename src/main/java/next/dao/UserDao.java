@@ -34,8 +34,9 @@ public class UserDao {
                 rs.getString("email"));
 
         String sql = "SELECT userId, password, name, email FROM USERS WHERE userid=?";
-        return jdbcTemplate.queryForObject(sql, pss, rowMapper);
+        return jdbcTemplate.queryForObject(sql, rowMapper, pss);
     }
+
 
     public List<User> findAll() throws SQLException {
         JdbcTemplate jdbcTemplate = new JdbcTemplate();
@@ -49,7 +50,7 @@ public class UserDao {
                 rs.getString("email"));
 
         String sql = "SELECT userId, password, name, email FROM USERS";
-        return jdbcTemplate.query(sql, pss, rowMapper);
+        return jdbcTemplate.query(sql, rowMapper, pss);
     }
 
 }

@@ -27,14 +27,14 @@ public class JdbcTemplate {
     }
 
     @SuppressWarnings("rawtypes")
-    public <T> List<T> query(String sql, PreparedStatementSetter pss, RowMapper<T> rowMapper) throws DataAccessException {
+    public <T> List<T> query(String sql, RowMapper<T> rm, PreparedStatementSetter pss) throws DataAccessException {
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
             pss.setValues(pstmt);
             List<T> result = new ArrayList<>();
             if (rs.next()) {
-                result.add(rowMapper.mapRow(rs));
+                result.add(rm.mapRow(rs));
             }
             return result;
         } catch (SQLException e) {
@@ -43,8 +43,8 @@ public class JdbcTemplate {
     }
 
     @SuppressWarnings("rawtypes")
-    public <T> T queryForObject(String sql, PreparedStatementSetter pss, RowMapper<T> rowMapper) throws DataAccessException {
-        List<T> result = query(sql, pss, rowMapper);
+    public <T> T queryForObject(String sql, RowMapper<T> rm, PreparedStatementSetter pss) throws DataAccessException {
+        List<T> result = query(sql, rm, pss);
         if (result.isEmpty()) {
             return null;
         }
