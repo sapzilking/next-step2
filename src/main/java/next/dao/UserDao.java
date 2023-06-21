@@ -4,9 +4,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import next.model.User;
 import core.jdbc.JdbcTemplate;
 import core.jdbc.RowMapper;
-import next.model.User;
 
 public class UserDao {
     public void insert(User user) {
@@ -30,7 +30,7 @@ public class UserDao {
         return jdbcTemplate.queryForObject(sql, rm, userId);
     }
 
-    public List<User> findAll() {
+    public List<User> findAll() throws SQLException {
         JdbcTemplate jdbcTemplate = new JdbcTemplate();
         String sql = "SELECT userId, password, name, email FROM USERS";
 
