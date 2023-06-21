@@ -1,7 +1,5 @@
 package core.jdbc;
 
-import javax.xml.crypto.Data;
-
 public class DataAccessException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
@@ -24,5 +22,4 @@ public class DataAccessException extends RuntimeException {
     public DataAccessException(Throwable cause) {
         super(cause);
     }
-
 }

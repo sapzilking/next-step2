@@ -1,17 +1,17 @@
 package next.dao;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import core.jdbc.ConnectionManager;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
-
-import next.model.User;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
-import java.util.List;
+import core.jdbc.ConnectionManager;
+import next.model.User;
 
 public class UserDaoTest {
     @Before

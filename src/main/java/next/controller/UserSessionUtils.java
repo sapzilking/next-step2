@@ -1,8 +1,8 @@
 package next.controller;
 
-import next.model.User;
-
 import javax.servlet.http.HttpSession;
+
+import next.model.User;
 
 public class UserSessionUtils {
     public static final String USER_SESSION_KEY = "user";
@@ -33,5 +33,4 @@ public class UserSessionUtils {
 
         return user.isSameUser(getUserFromSession(session));
     }
-
 }

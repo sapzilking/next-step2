@@ -1,20 +1,20 @@
 package next.controller;
 
-import core.db.DataBase;
-import core.mvc.Controller;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import core.mvc.Controller;
+import next.dao.UserDao;
 
 public class ListUserController implements Controller {
     @Override
-    public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if (!UserSessionUtils.isLogined(request.getSession())) {
+    public String execute(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        if (!UserSessionUtils.isLogined(req.getSession())) {
             return "redirect:/users/loginForm";
         }
 
-        request.setAttribute("users", DataBase.findAll());
+        UserDao userDao = new UserDao();
+        req.setAttribute("users", userDao.findAll());
         return "/user/list.jsp";
     }
 }
