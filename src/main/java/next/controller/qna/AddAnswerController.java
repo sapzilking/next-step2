@@ -1,31 +1,40 @@
 package next.controller.qna;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import core.mvc.Controller;
-import next.dao.AnswerDao;
-import next.model.Answer;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
+import core.mvc.AbstractController;
+import core.mvc.ModelAndView;
+import next.controller.UserSessionUtils;
+import next.dao.AnswerDao;
+import next.dao.QuestionDao;
+import next.model.Answer;
+import next.model.Result;
+import next.model.User;
 
-public class AddAnswerController implements Controller {
+public class AddAnswerController extends AbstractController {
     private static final Logger log = LoggerFactory.getLogger(AddAnswerController.class);
 
+    private QuestionDao questionDao = QuestionDao.getInstance();
+    private AnswerDao answerDao = AnswerDao.getInstance();
+
     @Override
-    public String execute(HttpServletRequest req, HttpServletResponse resp) throws Exception {
-        Answer answer = new Answer(req.getParameter("writer"), req.getParameter("contents"),
+    public ModelAndView execute(HttpServletRequest req, HttpServletResponse response) throws Exception {
+        if (!UserSessionUtils.isLogined(req.getSession())) {
+            return jsonView().addObject("result", Result.fail("Login is required"));
+        }
+
+        User user = UserSessionUtils.getUserFromSession(req.getSession());
+        Answer answer = new Answer(user.getUserId(), req.getParameter("contents"),
                 Long.parseLong(req.getParameter("questionId")));
         log.debug("answer : {}", answer);
 
-        AnswerDao answerDao = new AnswerDao();
         Answer savedAnswer = answerDao.insert(answer);
-        ObjectMapper mapper = new ObjectMapper();
-        resp.setContentType("application/json;charset=UTF-8");
-        PrintWriter out = resp.getWriter();
-        out.println(mapper.writeValueAsString(savedAnswer));
-        return null;
+        questionDao.updateCountOfAnswer(savedAnswer.getQuestionId());
+
+        return jsonView().addObject("answer", savedAnswer).addObject("result", Result.ok());
     }
 }

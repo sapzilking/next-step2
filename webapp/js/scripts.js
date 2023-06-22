@@ -1,8 +1,8 @@
 $(".answerWrite input[type=submit]").click(addAnswer);
 
 function addAnswer(e) {
-  e.preventDefault(); // submit이 자동으로 동작하는 것을 막는다.
-  //form 데이터들을 자동으로 묶어준다.
+  e.preventDefault();
+
   var queryString = $("form[name=answer]").serialize();
 
   $.ajax({
@@ -10,42 +10,50 @@ function addAnswer(e) {
     url : '/api/qna/addAnswer',
     data : queryString,
     dataType : 'json',
-    error : onError,
+    error: onError,
     success : onSuccess,
   });
 }
 
-function onSuccess(json, status) {
-  var answerTemplate = $("#answerTemplate").html();
-  var template = answerTemplate.format(json.writer, new Date(json.createdDate), json.contents, json.answerId);
-  $(".qna-comment-slipp-articles").prepend(template);
+function onSuccess(json, status){
+  var result = json.result;
+  if (result.status) {
+	  var answer = json.answer;
+	  var answerTemplate = $("#answerTemplate").html();
+	  var template = answerTemplate.format(answer.writer, new Date(answer.createdDate), answer.contents, answer.answerId, answer.answerId);
+	  $(".qna-comment-slipp-articles").prepend(template);	  
+  } else {
+	  alert(result.message);
+  }
 }
 
 function onError(xhr, status) {
   alert("error");
 }
 
-$(".qna-comment").on("click", "form-delete", deleteAnswer);
+$(".qna-comment").on("click", ".form-delete", deleteAnswer);
 
 function deleteAnswer(e) {
   e.preventDefault();
 
   var deleteBtn = $(this);
-  var queryString = deleteBtn.closet("form").serialize();
+  var queryString = deleteBtn.closest("form").serialize();
+  console.log("qs : " + queryString);
 
   $.ajax({
-    type : 'post',
-    url : '/api/qna/deleteAnswer',
-    data : queryString,
-    dataType : 'json',
-    error : function (xhr, status) {
-      alert("error")
+    type: 'post',
+    url: "/api/qna/deleteAnswer",
+    data: queryString,
+    dataType: 'json',
+    error: function (xhr, status) {
+      alert("error");
     },
-    success : function (json, status) {
-      if (json.status) {
-        deleteBtn.close('article').remove();
+    success: function (json, status) {
+      var result = json.result;
+      if (result.status) {
+        deleteBtn.closest('article').remove();
       }
-    },
+    }
   });
 }
 
@@ -58,4 +66,3 @@ String.prototype.format = function() {
         ;
   });
 };
-
