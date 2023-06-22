@@ -25,6 +25,30 @@ function onError(xhr, status) {
   alert("error");
 }
 
+$(".qna-comment").on("click", "form-delete", deleteAnswer);
+
+function deleteAnswer(e) {
+  e.preventDefault();
+
+  var deleteBtn = $(this);
+  var queryString = deleteBtn.closet("form").serialize();
+
+  $.ajax({
+    type : 'post',
+    url : '/api/qna/deleteAnswer',
+    data : queryString,
+    dataType : 'json',
+    error : function (xhr, status) {
+      alert("error")
+    },
+    success : function (json, status) {
+      if (json.status) {
+        deleteBtn.close('article').remove();
+      }
+    },
+  });
+}
+
 String.prototype.format = function() {
   var args = arguments;
   return this.replace(/{(\d+)}/g, function(match, number) {
